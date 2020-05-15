@@ -16,7 +16,10 @@ from pynwb.ophys import RoiResponseSeries
 from pynwb.ophys import Fluorescence, DfOverF
 
 
-### sample data import
+
+##########################
+### sample data import ###
+##########################
 def images_list(folder):
     """
     Generate an ordered list of images that will be used for subsequent analysis
@@ -88,10 +91,13 @@ data = data.reshape(data.shape[0], size_img[0], size_img[1])
 data.shape
 
 
-### transforing to nwb format
+#################################
+### transforing to nwb format ###
+#################################
 
-## this needs to be the time of the experiment that will be query from the json file
-start_time = datetime(2018, 4, 25, 2, 30, 3, tzinfo=tz.gettz('US/Eastern'))
+## this needs to be the time of the experiment that will be query from the experiment_144_info.json file
+start_time = datetime.now()
+create_date = datetime.now()
 
 ## setting up NWB file
 nwbfile = NWBFile(session_description='Optopatch experiment 2020_03_02',
@@ -145,9 +151,9 @@ imaging_plane = nwbfile.create_imaging_plane(name='Culture',
                                              device=device_2,
                                              excitation_lambda=000.,
                                              indicator='Quasar-2',
-                                             location='',
-                                             grid_spacing=[.01, .01], ## how much µm is 1 pixel ?
-                                             grid_spacing_unit='µm')
+                                             location='')
+                                             # grid_spacing=[.01, .01], ## how much µm is 1 pixel ?
+                                             # grid_spacing_unit='µm')
 
 
 # using internal data. this data will be stored inside the NWB file as acquired data that is not-modifiable
@@ -228,3 +234,20 @@ ophys_module.add(fl)
 
 with NWBHDF5IO('sample_data.nwb', 'w') as io:
     io.write(nwbfile)
+
+
+
+#
+# io = NWBHDF5IO('sample_data.nwb', 'r')
+# nwbfile = io.read()
+# mod = nwbfile.processing['ophys']
+# ps = mod['ImageSegmentation'].get_plane_segmentation()
+# pix_mask1 = ps['pixel_mask'][0]
+# pix_mask1.shape
+#
+# rrs = mod['Fluorescence'].get_roi_response_series()
+#
+# # get the data...
+# rrs_data = rrs.data
+# rrs_timestamps = rrs.timestamps
+# rrs_rois = rrs.rois
